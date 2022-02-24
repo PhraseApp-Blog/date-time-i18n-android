@@ -3,7 +3,6 @@ package com.example.assignment.ui.home
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -17,8 +16,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.time.temporal.ChronoUnit.DAYS
+import java.time.format.FormatStyle.MEDIUM
 
 class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
     ListAdapter<Article, NewsRecyclerAdapter.ArticleViewHolder>(UserDataAdapterListDiff()) {
@@ -56,36 +55,23 @@ class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
         fun bind(article: Article) {
 
             with(containerView) {
-                ViewCompat.setTransitionName(item_container, article.urlToImage.orEmpty())
 
-                val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-                val utcString = article.publishedAt
-                //Obtains an instance of Instant from a text string such as 2007-12-03T10:15:30.00Z.
-                val timestamp = Instant.parse(utcString)
-                val articlePublishedZonedTime = ZonedDateTime.ofInstant(timestamp, ZoneId.systemDefault())
-                // Current moment in UTC.
-                val currentTimestamp = Instant.now()
-                val currentZonedTime = ZonedDateTime.ofInstant(currentTimestamp, ZoneId.systemDefault())
-
-
-                val dayGap = articlePublishedZonedTime.toLocalDate().until(currentZonedTime, DAYS)
-                val date = when(dayGap){
+              val timestampInstant = Instant.parse(article.publishedAt)
+              val articlePublishedZonedTime = ZonedDateTime.ofInstant(timestampInstant, ZoneId.systemDefault())
+              val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(MEDIUM)
+              val currentTimestamp = Instant.now()
+              //Get current Instant
+              val currentZonedTime = ZonedDateTime.ofInstant(currentTimestamp, ZoneId.systemDefault())
+              //Convert current Instant to local time zone
+              val gapInDays = articlePublishedZonedTime.toLocalDate().until(currentZonedTime, DAYS)
+                val finalDate = when(gapInDays){
                     0L -> context.getString(R.string.today)
                     1L -> context.getString(R.string.yesterday)
                     else -> articlePublishedZonedTime.format(dateFormatter)
                 }
+              textview_date_time.text = finalDate
 
-                textview_date_time.text = date.toString()
-
-                val internationizedDateTimePublished: String = articlePublishedZonedTime.format(dateFormatter)
-                val internationizedDateTimeNow: String = currentZonedTime.format(dateFormatter)
-
-
-                textview_date_time_published.text = "Published: $internationizedDateTimePublished"
-                textview_date_time_current.text = "Current: $internationizedDateTimeNow"
-
-
-                textview_description.text = article.description
+              textview_description.text = article.description
                 article.urlToImage?.let { it1 ->
                     ImageLoader.loadImage(context, it1, image_thumbnail)
                 } ?: kotlin.run {
@@ -96,7 +82,3 @@ class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
         }
     }
 }
-
-fun LocalDate.isYesterday(): Boolean = this.isEqual(LocalDate.now().minusDays(1L))
-
-fun LocalDate.isToday(): Boolean = this.isEqual(LocalDate.now())
