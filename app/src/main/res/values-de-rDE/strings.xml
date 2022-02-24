@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">assignment</string>
     <string name="retry">Retry</string>
@@ -5,6 +6,6 @@
     <string name="something_went_wrong">Something went Wrong</string>
     <string name="loading">loading...</string>
 
-    <string name="today">Today</string>
-    <string name="yesterday">Yesterday</string>
+    <string name="today">Heute</string>
+    <string name="yesterday">Gestern</string>
 </resources>

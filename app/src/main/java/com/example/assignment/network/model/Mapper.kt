@@ -19,6 +19,7 @@ fun ArticleDto.mapToDomainModel(): Article {
         description = this.description.orEmpty(),
         url = this.url,
         content = this.content.orEmpty(),
-        urlToImage = this.urlToImage
+        urlToImage = this.urlToImage,
+        publishedAt = this.publishedAt.orEmpty()
     )
 }

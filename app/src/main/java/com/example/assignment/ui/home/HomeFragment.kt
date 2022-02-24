@@ -83,13 +83,6 @@ class HomeFragment : Fragment(R.layout.home_fragment), NewsRecyclerAdapter.Recyc
         button_retry.visibility = VISIBLE
     }
 
-    override fun onItemClicked(view: View, article: Article) {
-        applyAnimation()
-        val toNewsDetailFragment = HomeFragmentDirections.actionHomeFragmentToDetailFragment(article)
-        val extras = FragmentNavigatorExtras(view to article.urlToImage.orEmpty())
-        navigate(toNewsDetailFragment, extras)
-    }
-
     private fun applyAnimation() {
         exitTransition = Hold().apply {
             duration = resources.getInteger(R.integer.motion_duration_small).toLong()
@@ -100,9 +93,7 @@ class HomeFragment : Fragment(R.layout.home_fragment), NewsRecyclerAdapter.Recyc
         }
     }
 
-    private fun navigate(destination: NavDirections, extraInfo: FragmentNavigator.Extras) =
-        with(findNavController()) {
-            currentDestination?.getAction(destination.actionId)
-                ?.let { navigate(destination, extraInfo) }
-        }
+    override fun onItemClicked(view: View, article: Article) {
+
+    }
 }

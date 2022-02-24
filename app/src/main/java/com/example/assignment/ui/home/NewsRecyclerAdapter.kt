@@ -12,6 +12,13 @@ import com.example.assignment.domain.model.Article
 import com.example.assignment.ui.util.ImageLoader
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.item_article.view.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.time.temporal.ChronoUnit.DAYS
 
 class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
     ListAdapter<Article, NewsRecyclerAdapter.ArticleViewHolder>(UserDataAdapterListDiff()) {
@@ -50,10 +57,38 @@ class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
 
             with(containerView) {
                 ViewCompat.setTransitionName(item_container, article.urlToImage.orEmpty())
-                textview_author.text = article.author
+
+                val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                val utcString = article.publishedAt
+                //Obtains an instance of Instant from a text string such as 2007-12-03T10:15:30.00Z.
+                val timestamp = Instant.parse(utcString)
+                val articlePublishedZonedTime = ZonedDateTime.ofInstant(timestamp, ZoneId.systemDefault())
+                // Current moment in UTC.
+                val currentTimestamp = Instant.now()
+                val currentZonedTime = ZonedDateTime.ofInstant(currentTimestamp, ZoneId.systemDefault())
+
+
+                val dayGap = articlePublishedZonedTime.toLocalDate().until(currentZonedTime, DAYS)
+                val date = when(dayGap){
+                    0L -> context.getString(R.string.today)
+                    1L -> context.getString(R.string.yesterday)
+                    else -> articlePublishedZonedTime.format(dateFormatter)
+                }
+
+                textview_date_time.text = date.toString()
+
+                val internationizedDateTimePublished: String = articlePublishedZonedTime.format(dateFormatter)
+                val internationizedDateTimeNow: String = currentZonedTime.format(dateFormatter)
+
+
+                textview_date_time_published.text = "Published: $internationizedDateTimePublished"
+                textview_date_time_current.text = "Current: $internationizedDateTimeNow"
+
+
                 textview_description.text = article.description
                 article.urlToImage?.let { it1 ->
-                    ImageLoader.loadImage(context, it1, image_thumbnail) } ?: kotlin.run {
+                    ImageLoader.loadImage(context, it1, image_thumbnail)
+                } ?: kotlin.run {
                     ImageLoader.loadImage(context, R.drawable.placeholder, image_thumbnail)
                 }
                 setOnClickListener { callback.onItemClicked(itemView, article) }
@@ -61,3 +96,7 @@ class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
         }
     }
 }
+
+fun LocalDate.isYesterday(): Boolean = this.isEqual(LocalDate.now().minusDays(1L))
+
+fun LocalDate.isToday(): Boolean = this.isEqual(LocalDate.now())

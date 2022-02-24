@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -7,6 +9,7 @@ plugins {
     id("androidx.navigation.safeargs")
     id("de.mannodermaus.android-junit5")
 }
+val key: String = gradleLocalProperties(rootDir).getProperty("key")
 
 android {
     compileSdk = Android.compileSdk
@@ -18,7 +21,7 @@ android {
         targetSdk = Android.targetSdk
         versionCode = Android.versionCode
         versionName = Android.versionName
-
+        buildConfigField("String", "key", key)
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -61,6 +64,8 @@ dependencies {
 
     implementation(Hilt.android)
     kapt(Hilt.compiler)
+    implementation("com.google.android.gms:play-services-location:17.0.0")
+
 
     testImplementation(UnitTest.jupiter_api)
     testRuntimeOnly(UnitTest.jupiter_engine)

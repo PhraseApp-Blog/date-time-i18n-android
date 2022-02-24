@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Cache.Companion.key
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -62,7 +63,5 @@ object NetworkModule {
     @Singleton
     @Provides
     @Named("api_key")
-    fun provideAuthToken(): String{
-        return "4787926ba5134955bdfe6e4537d791f8"
-    }
+    fun provideAuthToken() = BuildConfig.key
 }

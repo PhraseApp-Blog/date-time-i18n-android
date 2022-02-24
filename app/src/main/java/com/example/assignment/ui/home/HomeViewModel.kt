@@ -5,6 +5,7 @@ import com.example.assignment.domain.model.Article
 import com.example.assignment.domain.model.data.Error
 import com.example.assignment.interactors.home.GetNewsList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,13 +33,17 @@ constructor(
 
     fun getArticles() {
         viewModelScope.launch {
-            getNewsList.execute(apiKey).collect { it ->
-                _isLoading.value = it.loading
-                it.data?.let {
-                    _articles.value = it
-                }
-                _error.value = it.error
+                getNewsFromWeb()
+        }
+    }
+
+    private suspend fun getNewsFromWeb() {
+        getNewsList.execute(apiKey).collect { it ->
+            _isLoading.value = it.loading
+            it.data?.let {
+                _articles.value = it
             }
+            _error.value = it.error
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.assignment.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.assignment.R
 import dagger.hilt.android.AndroidEntryPoint
 
