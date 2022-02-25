@@ -56,21 +56,7 @@ class NewsRecyclerAdapter(val callback: RecyclerViewClickListener) :
 
             with(containerView) {
 
-              val timestampInstant = Instant.parse(article.publishedAt)
-              val articlePublishedZonedTime = ZonedDateTime.ofInstant(timestampInstant, ZoneId.systemDefault())
-              val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(MEDIUM)
-              val currentTimestamp = Instant.now()
-              //Get current Instant
-              val currentZonedTime = ZonedDateTime.ofInstant(currentTimestamp, ZoneId.systemDefault())
-              //Convert current Instant to local time zone
-              val gapInDays = articlePublishedZonedTime.toLocalDate().until(currentZonedTime, DAYS)
-                val finalDate = when(gapInDays){
-                    0L -> context.getString(R.string.today)
-                    1L -> context.getString(R.string.yesterday)
-                    else -> articlePublishedZonedTime.format(dateFormatter)
-                }
-              textview_date_time.text = finalDate
-
+              textview_date_time.text = article.publishedAt
               textview_description.text = article.description
                 article.urlToImage?.let { it1 ->
                     ImageLoader.loadImage(context, it1, image_thumbnail)
